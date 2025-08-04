@@ -1,4 +1,6 @@
+from collections import defaultdict
 import csv
+from datetime import datetime, date
 import json
 import os
 
@@ -8,6 +10,7 @@ from .session import Session
 class Data_Manager:
 
     def __init__(self, sessions: list = None):
+        self.loaded_sessions = []
         self.sessions = []
         self.restore_previous_sessions()
 
@@ -39,6 +42,8 @@ class Data_Manager:
                     'exercise_counter': session.exercise_counter
                 }
                 writer.writerow(session_data)
+            self.loaded_sessions.extend(self.sessions)
+            self.sessions = []
 
         self.sessions = []
 
@@ -59,10 +64,37 @@ class Data_Manager:
                     exercise = Exercise.from_dict(ex_data)
                     session.add_exercise(exercise)
                 session.exercise_counter = int(row.get('exercise_counter', len(session.exercises)))
-                self.sessions.append(session)
+                self.loaded_sessions.append(session)
 
-    def get_all_session(self):
-        return self.sessions
+    def get_all_sessions(self):
+        return self.loaded_sessions + self.sessions
+    
+    def get_all_exs(self):
+        all = []
+        for session in self.get_all_sessions():
+            all.extend(session.get_all_exs())
+        return all
     
     def get_num_sessions(self):
-        return len(self.sessions)
+        return len(self.get_all_sessions())
+    
+    def get_sessions_per_week(self):
+        week_counts = defaultdict(int)
+        for session in self.sessions:
+            session_date = date.fromisoformat(session.name)
+            year, week, _ = session_date.isocalendar()
+            week_counts[(year, week)] += 1
+        return week_counts
+    
+    def get_weekly_workout_stats(self):
+        week_counts = self.get_sessions_per_week()
+        today = date.today()
+        current_year, current_week, _ = today.isocalendar()
+        last_week = current_week - 1
+        last_year = current_year
+        if last_week == 0:
+            last_year -= 1
+            last_week = 52
+        this_week_count = week_counts.get((current_year, current_week), 0)
+        last_week_count = week_counts.get((last_year, last_week), 0)
+        return this_week_count, last_week_count

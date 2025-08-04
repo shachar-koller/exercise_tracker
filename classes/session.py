@@ -25,3 +25,6 @@ class Session:
 
     def set_type(self, type: str):
         self.type = type
+
+    def get_all_exs(self):
+        return [exercise.name for exercise in self.exercises]
