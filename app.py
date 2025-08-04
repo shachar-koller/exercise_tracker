@@ -1,5 +1,7 @@
 import streamlit as st
 
+from classes.data_manager import Data_Manager
+
 # Set page config
 st.set_page_config(
     page_title="Exercise Tracker - Login",
@@ -8,6 +10,8 @@ st.set_page_config(
 )
 
 def main_app():
+    dm = Data_Manager()
+    
     st.title("🏋️ Exercise Tracker Dashboard")
     
     st.divider()
@@ -19,12 +23,13 @@ def main_app():
     col1, col2, col3 = st.columns(3)
     with col1:
         #this is a placeholder. need to create a function that gets total workouts
-        st.metric("Total Workouts", "12", "2")
+        total_workouts = dm.get_num_sessions()
+        st.metric("Total Workouts", total_workouts, "2")
     with col2:
         #ditto, need to get total workouts this week and last
         st.metric("This Week", "3", "1")
     with col3:
-        #ditto, need to get total workouts 
+        #ditto, need to get all workouts 
         st.metric("Favorite Exercise", "Push-ups", "")
     
     st.divider()

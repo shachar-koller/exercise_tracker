@@ -21,6 +21,7 @@ def main_app():
     st.divider()
 
     session_date = st.date_input("Session Date", value=date.today())
+    session_type = st.text_input("What type of Exercise did you do?")
     
     if "current_session" not in st.session_state:
         st.session_state.current_session = Session(str(session_date))
@@ -65,10 +66,12 @@ def main_app():
     col1, col2 = st.columns(2)
     with col1:
         if st.button("💾 Save Session", use_container_width=True):
+            st.session_state.current_session.set_type(session_type)
             data_manager.add_session(st.session_state.current_session)
             data_manager.write_sessions()
             st.success("Session saved!")
             del st.session_state.current_session
+            st.rerun()
     
     with col2:
         if st.button("🏋️ Return Home", use_container_width=True):

@@ -12,9 +12,6 @@ class Exercise:
             "reps": reps
         }
         self.sets.append(set_data)
-
-    def toRedisString(self):
-        return f"Exercise: {self.name}, Sets: {self.sets}"
     
     def to_dict(self):
         return {
@@ -27,6 +24,9 @@ class Exercise:
         exercise = cls(name=data.get("name"))
         exercise.sets = data.get("sets", [])
         return exercise
+    
+    def __str__(self):
+        return f"Exercise: {self.name}, Sets: {self.sets}"
 
     def getCLIdata(self):
         name1 = input("what exercise did you do? ")
