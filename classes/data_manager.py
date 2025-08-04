@@ -80,7 +80,7 @@ class Data_Manager:
     
     def get_sessions_per_week(self):
         week_counts = defaultdict(int)
-        for session in self.sessions:
+        for session in self.get_all_sessions():
             session_date = date.fromisoformat(session.name)
             year, week, _ = session_date.isocalendar()
             week_counts[(year, week)] += 1
